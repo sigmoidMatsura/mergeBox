@@ -1,11 +1,9 @@
-# 🧱 SwiftUI Clean Architecture Template
+#  mergeBoxアプリ概要
 
-> 🎯 個人開発・中規模アプリ向けの軽量クリーンアーキテクチャ構成  
-> Infra層を省略し、Data層でAPIやDBアクセスを行う現実的な設計
-
+- 実装してみたい機能を詰め込んだだけの自己満アプリ
 ---
 
-## 🗺️ アーキテクチャ概要
+##  アーキテクチャ概要
 
 ```mermaid
 flowchart TD
@@ -18,7 +16,7 @@ flowchart TD
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ```bash
 # 1. プロジェクトを開く
@@ -30,7 +28,7 @@ open MyApp.xcodeproj
 
 ---
 
-## 🧱 フォルダ構成
+##  フォルダ構成
 
 ```
 AppMain/
@@ -80,7 +78,7 @@ Resource/
 
 ---
 
-## 🧠 各層の概要
+##  各層の概要
 
 | 層 | 目的 | 例 |
 |----|------|----|
@@ -91,7 +89,7 @@ Resource/
 
 ---
 
-## 💉 依存性注入の流れ
+##  依存性注入の流れ
 
 ```
 [View] → [ViewModel]
@@ -106,7 +104,7 @@ Resource/
 
 ---
 
-## 🧩 AppDIContainerサンプル
+##  AppDIContainerサンプル
 
 ```swift
 final class AppDIContainer {
@@ -136,7 +134,7 @@ final class AppDIContainer {
 
 ---
 
-## 🧠 Mapperの役割
+##  Mapperの役割
 
 - **目的**：DTO（外部データ）をModel（アプリ内部データ）へ変換  
 - **効果**：RepositoryImplをシンプル化・テスト容易化  
@@ -164,7 +162,7 @@ struct UserMapper {
 
 ---
 
-## 🧩 テスト方針
+##  テスト方針
 
 - **UseCase単体テスト**  
   MockRepositoryを注入してロジックを検証  
@@ -172,14 +170,25 @@ struct UserMapper {
   DataSourceのMockを用いて通信依存を排除
 
 ---
+##  使用ライブラリ一覧
 
-## ⚙️ 技術構成
+このプロジェクトで使用しているライブラリ一覧  
+Swift Package Manager（SPM）で管理  
+
+| ライブラリ名 | 用途 | 備考 |
+|---------------|------|------|
+| **Alamofire** | HTTP通信 | APIクライアントとして利用（必要に応じて追加） |
+| **Logger** | デバッグログ出力 | Utility層で利用（独自実装または外部パッケージ） |
+
+---
+
+##  技術構成
 
 | 項目 | 使用技術 |
 |------|-----------|
 | 言語 | Swift 5.10+ |
 | UI | SwiftUI |
-| 通信 | URLSession / （必要に応じてAlamofire） |
+| 通信 | Alamofire |
 | DI | 独自DIコンテナ（AppDIContainer） |
 | アーキテクチャ | Clean Architecture（軽量構成） |
 | 対応OS | iOS 17.0+ |
@@ -188,7 +197,7 @@ struct UserMapper {
 
 ---
 
-## 💬 まとめ
+##  まとめ
 
 | 長所 | 内容 |
 |------|------|
