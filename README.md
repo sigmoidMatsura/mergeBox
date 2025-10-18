@@ -23,18 +23,6 @@ Feature 単位の垂直スライス構成を基本とする。
 
 ---
 
-## Quick Start
-
-```bash
-# 1. プロジェクトを開く
-open MergeBox.xcodeproj
-
-# 2. 実行
-⌘ + R
-```
-
----
-
 ## フォルダ構成（Feature単位）
 
 ```bash
@@ -237,6 +225,70 @@ Mapper はその橋渡しを行う層である。
 | **Repository**  | MockDataSource を使用し、外部通信に依存しない検証を行う   |
 | **Coordinator** | `path` の状態変化を監視し、遷移の妥当性を確認する          |
 | **ViewModel**   | UseCase・Coordinator をモック化し、状態遷移をテストする |
+
+---
+
+## Quick Start
+
+```bash
+# 1. プロジェクトを開く
+open MergeBox.xcodeproj
+
+# 2. 実行
+⌘ + R
+```
+
+---
+
+## Feature自動生成コマンド
+
+コマンド実行により、Presentation・Domain・Data層の各ディレクトリが一括で作成される。
+
+```makefile
+FEATURES_DIR = ./Features
+
+feature:
+	@if [ -z "$(NAME)" ]; then \
+	  echo "Usage: make feature NAME=FeatureName"; \
+	  exit 1; \
+	fi
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Presentation
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Domain/UseCase
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Domain/Repository
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Data/Repository
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Data/DataSource
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Data/DTO
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Data/Mapper
+	@echo "✅ Created feature: $(FEATURES_DIR)/$(NAME)"
+```
+
+## 実行方法
+
+```bash
+make feature NAME=SampleFeature
+```
+
+## 生成結果
+
+```
+Features/
+└── SampleFeature/
+    ├── Presentation/
+    ├── Domain/
+    │   ├── UseCase/
+    │   └── Repository/
+    └── Data/
+        ├── Repository/
+        ├── DataSource/
+        ├── DTO/
+        └── Mapper/
+```
+
+### 補足事項
+
+* `NAME` に指定した値がFeature名として使用される
+* 既存フォルダが存在する場合は上書きせずスキップされる
+* macOSおよびLinux環境で動作（Xcodeプロジェクトのルートで実行すること）
 
 ---
 
