@@ -1,9 +1,13 @@
-#  mergeBoxアプリ概要
+# mergeBox 
 
-- 実装してみたい機能を詰め込んだだけの自己満アプリ
+## アプリ概要
+
+mergeBox は、実装実験や機能検証を目的とした個人開発アプリである。
+SwiftUI を中心に、状態駆動の画面遷移と Clean Architecture を組み合わせた構成を採用している。
+
 ---
 
-##  アーキテクチャ概要
+## アーキテクチャ概要
 
 ```mermaid
 flowchart TD
@@ -14,13 +18,16 @@ flowchart TD
     DataSource --> APIorLocal[(API / Local Storage)]
 ```
 
+本アーキテクチャは、状態駆動（State-Driven）Navigation と
+Feature 単位の垂直スライス構成を基本とする。
+
 ---
 
-##  Quick Start
+## Quick Start
 
 ```bash
 # 1. プロジェクトを開く
-open MyApp.xcodeproj
+open MergeBox.xcodeproj
 
 # 2. 実行
 ⌘ + R
@@ -28,48 +35,52 @@ open MyApp.xcodeproj
 
 ---
 
-##  フォルダ構成
+## フォルダ構成（Feature単位）
 
-```
+```bash
 AppMain/
- └── DI/
-      └── AppDIContainer.swift        // 依存関係を生成・注入
-
-UI層/
- └── [FeatureName]/
-      ├── [FeatureName]View.swift
-      └── [FeatureName]ViewModel.swift
-
-Domain層/
- ├── Model/
- │    ├── User.swift
- │    └── Article.swift
- ├── Repository/
- │    ├── UserRepositoryProtocol.swift
- │    └── ArticleRepositoryProtocol.swift
- └── UseCase/
-      ├── FetchUserUseCase.swift
-      └── FetchArticlesUseCase.swift
-
-Data層/
- ├── DTO/
- │    ├── UserDTO.swift
- │    └── ArticleDTO.swift
- ├── DataSource/
- │    ├── APIDataSource.swift
- │    └── UserDefaultsDataSource.swift
- ├── Repository/
- │    ├── UserRepositoryImpl.swift
- │    └── ArticleRepositoryImpl.swift
- └── Mapper/
-      ├── UserMapper.swift
-      └── ArticleMapper.swift
-
+ ├── DI/
+ │    └── AppDIContainer.swift        // 依存関係を生成・注入
+ └── AppEntry.swift                   // アプリのエントリポイント
+ |
+Features/
+ ├── UserList/
+ │    ├── Presentation/               # UI層
+ │    │    ├── UserListView.swift
+ │    │    ├── UserListViewModel.swift
+ │    │    └── UserListCoordinator.swift
+ │    ├── Domain/                     # ビジネスロジック層
+ │    │    ├── UseCase/
+ │    │    │    └── FetchUserListUseCase.swift
+ │    │    └── Repository/
+ │    │         └── UserRepositoryProtocol.swift
+ │    └── Data/                       # データアクセス層
+ │         ├── Repository/
+ │         │    └── UserRepositoryImpl.swift
+ │         ├── DataSource/
+ │         │    ├── APIDataSource.swift
+ │         │    └── LocalDataSource.swift
+ │         ├── DTO/
+ │         │    └── UserDTO.swift
+ │         └── Mapper/
+ │              └── UserMapper.swift
+ │
+ ├── UserDetail/
+ │    ├── Presentation/
+ │    │    └── UserDetailView.swift
+ │    └── Domain/
+ │         └── Model/
+ │              └── User.swift
+ │
+ └── Common/
+ │     ├── Components/
+ │     └── Extensions/
+ │ 
 Utility/
  ├── Logger.swift
- └── Extensions/
-      └── Date+Format.swift
-
+ └── Extensions
+ │     └── Date+Format.swift
+ |
 Resource/
  ├── Asset+Color.swift
  ├── Asset+Image.swift
@@ -78,18 +89,64 @@ Resource/
 
 ---
 
-##  各層の概要
+## 各ディレクトリの責務
 
-| 層 | 目的 | 例 |
-|----|------|----|
-| **UI層** | 画面描画と状態管理 | SwiftUI View / ViewModel |
-| **Domain層** | ビジネスロジックとルール定義 | UseCase, RepositoryProtocol, Model |
-| **Data層** | API通信・データ保存・変換 | RepositoryImpl, DataSource, Mapper, DTO |
-| **Utility層** | 共通機能やロガー | Logger, Extensions |
+| ディレクトリ        | 役割                                       |
+| ------------- | ---------------------------------------- |
+| **AppMain/**  | アプリケーション全体のエントリポイントおよび依存性注入を担う           |
+| **Features/** | 各機能を縦割りで構成し、UI・Domain・Data 層を1単位として完結させる |
+| **Common/**   | 共通 UI コンポーネントや拡張機能を管理する                  |
+| **Utility/**  | ロガーや共通処理など、全体で利用される機能を保持する               |
+| **Resource/** | 色・画像・ローカライズ文字列などの静的リソースを格納する             |
 
 ---
 
-##  依存性注入の流れ
+## Coordinator の概要
+
+`NavigationStack` の `path` を状態として扱い、
+状態遷移に基づいて画面遷移を制御する仕組みである。
+UIKit における `UINavigationController` の責務を SwiftUI 流に抽象化している。
+
+各 Feature に専用の **Coordinator** を用意し、
+画面遷移を一元的に管理する。
+
+### 実装例
+
+```swift
+@MainActor
+final class UserListCoordinator: ObservableObject {
+    @Published var path = NavigationPath()
+
+    enum Route: Hashable {
+        case userDetail(User)
+    }
+
+    func push(_ route: Route) {
+        path.append(route)
+    }
+
+    func pop() {
+        path.removeLast()
+    }
+
+    func popToRoot() {
+        path = NavigationPath()
+    }
+}
+```
+
+ViewModel からは、Coordinator のメソッドを呼び出すことで状態遷移を発生させる。
+
+```swift
+coordinator.push(.userDetail(user))
+```
+
+Coordinator は画面遷移の状態のみを保持し、UIロジックを持たない。
+これにより、画面構成とビジネスロジックを明確に分離できる。
+
+---
+
+## 依存性注入の流れ
 
 ```
 [View] → [ViewModel]
@@ -99,12 +156,12 @@ Resource/
                     ↳ DataSource(API / Local)
 ```
 
-全ての依存関係は `AppDIContainer` で生成・注入される。  
-テストやMock差し替えが容易。
+全ての依存関係は `AppDIContainer` により生成・注入される。
+依存の入れ替えが容易であり、Mock を用いたテストにも適している。
 
 ---
 
-##  AppDIContainerサンプル
+## AppDIContainer の構成例
 
 ```swift
 final class AppDIContainer {
@@ -113,7 +170,7 @@ final class AppDIContainer {
 
     // MARK: - DataSource
     private let apiDataSource = APIDataSource()
-    private let localDataSource = UserDefaultsDataSource()
+    private let localDataSource = LocalDataSource()
 
     // MARK: - Repository
     private func makeUserRepository() -> UserRepositoryProtocol {
@@ -121,23 +178,30 @@ final class AppDIContainer {
     }
 
     // MARK: - UseCase
-    private func makeFetchUserUseCase() -> FetchUserUseCaseProtocol {
-        FetchUserUseCase(repository: makeUserRepository())
+    private func makeFetchUserListUseCase() -> FetchUserListUseCaseProtocol {
+        FetchUserListUseCase(repository: makeUserRepository())
     }
 
-    // MARK: - ViewModel
-    func makeDashboardViewModel() -> DashboardViewModel {
-        DashboardViewModel(fetchUserUseCase: makeFetchUserUseCase())
+    // MARK: - Coordinator
+    private let userListCoordinator = UserListCoordinator()
+
+    // MARK: - View
+    func makeUserListView() -> some View {
+        let vm = UserListViewModel(
+            fetchUsersUseCase: makeFetchUserListUseCase(),
+            coordinator: userListCoordinator
+        )
+        return UserListView(viewModel: vm, coordinator: userListCoordinator)
     }
 }
 ```
 
 ---
 
-##  Mapperの役割
+## Mapper の役割
 
-- **目的**：DTO（外部データ）をModel（アプリ内部データ）へ変換  
-- **効果**：RepositoryImplをシンプル化・テスト容易化  
+DTO（外部データ）をアプリ内部で利用可能な Model へ変換する責務を持つ。
+RepositoryImpl の責務を軽減し、データ変換ロジックを一元管理する。
 
 ```swift
 // DTO
@@ -160,47 +224,63 @@ struct UserMapper {
 }
 ```
 
----
-
-##  テスト方針
-
-- **UseCase単体テスト**  
-  MockRepositoryを注入してロジックを検証  
-- **Repositoryテスト**  
-  DataSourceのMockを用いて通信依存を排除
-
----
-##  使用ライブラリ一覧
-
-このプロジェクトで使用しているライブラリ一覧  
-Swift Package Manager（SPM）で管理  
-
-| ライブラリ名 | 用途 | 備考 |
-|---------------|------|------|
-| **Alamofire** | HTTP通信 | APIクライアントとして利用（必要に応じて追加） |
-| **Logger** | デバッグログ出力 | Utility層で利用（独自実装または外部パッケージ） |
+DTO は API 仕様に依存し、Model はアプリケーション内部仕様に依存する。
+Mapper はその橋渡しを行う層である。
 
 ---
 
-##  技術構成
+## テスト方針
 
-| 項目 | 使用技術 |
-|------|-----------|
-| 言語 | Swift 5.10+ |
-| UI | SwiftUI |
-| 通信 | Alamofire |
-| DI | 独自DIコンテナ（AppDIContainer） |
-| アーキテクチャ | Clean Architecture（軽量構成） |
-| 対応OS | iOS 17.0+ |
-| 依存管理 | Swift Package Manager (SPM) |
-
+| 対象              | テスト内容                                 |
+| --------------- | ------------------------------------- |
+| **UseCase**     | MockRepository を用いてビジネスロジックを単体検証する    |
+| **Repository**  | MockDataSource を使用し、外部通信に依存しない検証を行う   |
+| **Coordinator** | `path` の状態変化を監視し、遷移の妥当性を確認する          |
+| **ViewModel**   | UseCase・Coordinator をモック化し、状態遷移をテストする |
 
 ---
 
-##  まとめ
+## 使用ライブラリ一覧
 
-| 長所 | 内容 |
-|------|------|
-| **軽量構成** | 不要なInfra層を省略し、シンプルな構成 |
-| **テストが容易** | DIコンテナでMock差し替えが容易 |
-| **保守性** | 各層が明確に分離され保守性が高い |
+すべて Swift Package Manager（SPM）で管理する。
+
+| ライブラリ名        | 用途       | 備考              |
+| ------------- | -------- | --------------- |
+| **Alamofire** | HTTP 通信  | API クライアントとして利用 |
+| **Logger**    | デバッグログ出力 | Utility 層で利用    |
+
+---
+
+## 技術構成
+
+| 項目      | 内容                                   |
+| ------- | ------------------------------------ |
+| 言語      | Swift 5.10+                          |
+| UI      | SwiftUI                              |
+| 通信      | Alamofire                            |
+| DI      | 独自 DI コンテナ（AppDIContainer）           |
+| アーキテクチャ | Clean Architecture + 状態駆動 Navigation |
+| 構成方式    | Feature 単位（垂直スライス）                   |
+| 対応 OS   | iOS 17.0+                            |
+| 依存管理    | Swift Package Manager (SPM)          |
+
+---
+
+## まとめ
+
+| 項目               | 内容                                    |
+| ---------------- | ------------------------------------- |
+| **Feature 単位構成** | UI から Data 層までを一機能で完結させる構成            |
+| **状態駆動の画面遷移**    | Coordinator により NavigationStack を制御する |
+| **明確な依存関係**      | AppDIContainer に依存注入を集約し、テスト容易性を確保    |
+| **高い保守性**        | 機能単位で独立した開発・改修が可能                     |
+| **チーム開発適性**      | 各 Feature が分離され、複数人開発でも衝突が少ない         |
+
+---
+
+## 結論
+
+mergeBox のアーキテクチャは、
+**状態駆動の遷移制御** と **Clean Architecture** を統合した、
+SwiftUI 向けのモジュール分離指向構成
+Feature 単位構成により、保守性・拡張性・テスト容易性のすべてを両立する
