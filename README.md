@@ -37,7 +37,9 @@ Features/
  │    │    ├── UserListView.swift
  │    │    ├── UserListViewModel.swift
  │    │    └── UserListCoordinator.swift
- │    ├── Domain/                     # ビジネスロジック層
+ │    └── Domain/                     # ビジネスロジック層
+ │    │    └── Model/
+ │    │    │    └── User.swift           
  │    │    ├── UseCase/
  │    │    │    └── FetchUserListUseCase.swift
  │    │    └── Repository/
@@ -52,13 +54,6 @@ Features/
  │         │    └── UserDTO.swift
  │         └── Mapper/
  │              └── UserMapper.swift
- │
- ├── UserDetail/
- │    ├── Presentation/
- │    │    └── UserDetailView.swift
- │    └── Domain/
- │         └── Model/
- │              └── User.swift
  │
  └── Common/
  │     ├── Components/
@@ -255,6 +250,7 @@ feature:
 	mkdir -p $(FEATURES_DIR)/$(NAME)/Presentation
 	mkdir -p $(FEATURES_DIR)/$(NAME)/Domain/UseCase
 	mkdir -p $(FEATURES_DIR)/$(NAME)/Domain/Repository
+	mkdir -p $(FEATURES_DIR)/$(NAME)/Domain/Model
 	mkdir -p $(FEATURES_DIR)/$(NAME)/Data/Repository
 	mkdir -p $(FEATURES_DIR)/$(NAME)/Data/DataSource
 	mkdir -p $(FEATURES_DIR)/$(NAME)/Data/DTO
@@ -276,7 +272,8 @@ Features/
     ├── Presentation/
     ├── Domain/
     │   ├── UseCase/
-    │   └── Repository/
+    │   ├── Repository/
+    │   └── Model/
     └── Data/
         ├── Repository/
         ├── DataSource/
