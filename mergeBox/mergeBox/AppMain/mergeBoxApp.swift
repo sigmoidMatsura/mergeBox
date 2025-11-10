@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct mergeBoxApp: App {
+    init() {
+        UIPageControl.appearance().pageIndicatorTintColor = .gray
+        UIPageControl.appearance().currentPageIndicatorTintColor = .red
+    }
     var body: some Scene {
         WindowGroup {
             OnboardingView()
