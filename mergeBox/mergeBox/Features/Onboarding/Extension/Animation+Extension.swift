@@ -9,8 +9,6 @@ import Lottie
 
 extension LottieAnimation {
     static let studyAnimation = named("study")
-    
-    static let smileAnimation = named("smile")
-    
+    static let challengeAnimation = named("challenge")
     static let loginAnimation = named("login")
 }
