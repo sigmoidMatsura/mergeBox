@@ -12,7 +12,7 @@ struct RoundedButtonStyle: ButtonStyle {
     let backgroundColor: Color
     let fontSize: Font
     let height: CGFloat
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(fontSize)
@@ -27,6 +27,23 @@ struct RoundedButtonStyle: ButtonStyle {
             .foregroundStyle(foregroundColor)
             .clipShape(Capsule())
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+    }
+}
+
+extension ButtonStyle where Self == RoundedButtonStyle {
+    static func buttonStyle(
+        foregroundColor: Color,
+        backgroundColor: Color,
+        fontSize: Font,
+        height: CGFloat,
+        width: CGFloat? = nil
+    ) -> RoundedButtonStyle {
+        return RoundedButtonStyle(
+            foregroundColor: foregroundColor,
+            backgroundColor: backgroundColor,
+            fontSize: fontSize,
+            height: height
+        )
     }
 }
 
