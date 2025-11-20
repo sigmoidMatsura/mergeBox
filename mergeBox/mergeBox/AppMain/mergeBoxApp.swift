@@ -13,9 +13,19 @@ struct mergeBoxApp: App {
         UIPageControl.appearance().pageIndicatorTintColor = .gray
         UIPageControl.appearance().currentPageIndicatorTintColor = .red
     }
+    // userDefaultで保持する
+    var isLogin: Bool = false
+    // 初期起動かUserdefaultで保持する
+    // プロパティラッパーで実装すること
+//    var isFirstLaunch: Bool = true
+    
     var body: some Scene {
         WindowGroup {
-            OnboardingView()
+            if isLogin {
+                LoginView()
+            } else {
+                OnboardingView()
+            }
         }
     }
 }
