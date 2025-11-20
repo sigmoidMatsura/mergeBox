@@ -31,7 +31,7 @@ struct RoundedButtonStyle: ButtonStyle {
 }
 
 extension ButtonStyle where Self == RoundedButtonStyle {
-    static func buttonStyle(
+    static func customButtonStyle(
         foregroundColor: Color,
         backgroundColor: Color,
         fontSize: Font,
