@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var id = ""
-    @State private var password = ""
+    @State private var viewModel = LoginViewModel()
+    
     var body: some View {
         ZStack {
             background
