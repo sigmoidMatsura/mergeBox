@@ -14,10 +14,7 @@ import SwiftUI
 
 struct OnboardingView: View {
 
-    @State var viewModel: OnboardingViewModel
-    init(viewModel: OnboardingViewModel = OnboardingViewModel()) {
-        _viewModel = State(wrappedValue: viewModel)
-    }
+    @State var viewModel = OnboardingViewModel()
     
     var body: some View {
         NavigationStack(path: $viewModel.router.path) {
