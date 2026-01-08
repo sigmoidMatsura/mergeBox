@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Playgrounds
 
 struct LoginView: View {
     @State private var viewModel = LoginViewModel()
@@ -27,7 +26,7 @@ struct LoginView: View {
                     orBorder
                     googleLoginButton
                         .padding(.horizontal, 50)
-                    resisterButton
+                    registerButton
                 }
             }
         }
@@ -136,8 +135,8 @@ private extension LoginView {
         .clipShape(Capsule())
     }
     
-    var resisterButton: some View {
-        HStack {
+    var registerButton: some View {
+        HStack(spacing: 4) {
             Text("アカウントが未作成ですか？")
             Button("アカウントを作成") {
                 
