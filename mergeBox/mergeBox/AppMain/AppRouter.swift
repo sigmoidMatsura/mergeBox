@@ -13,7 +13,7 @@ enum AuthRoute: Hashable {
 }
 
 @Observable
-final class AuthRouter {
+final class AppRouter {
     var path = NavigationPath()
     
     func navigate(to route: AuthRoute) {

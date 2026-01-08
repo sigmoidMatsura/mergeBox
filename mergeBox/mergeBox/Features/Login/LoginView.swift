@@ -8,37 +8,32 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var id = ""
-    @State private var password = ""
+    @State private var viewModel = LoginViewModel()
+
     var body: some View {
         ZStack {
             background
                 .ignoresSafeArea(edges: .all)
             VStack(spacing: 78) {
-                Image(.Login.Images.logo)
-                    .resizable()
-                    .frame(width: 235, height: 97)
-                VStack(spacing: 14) {
-                    TextField("Email", text: $id)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Password", text: $password)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    Button("ログイン"){
-                        
+                logo
+                VStack (spacing: 50) {
+                    VStack(spacing: 14) {
+                        userIDTextField
+                        passwordTextField
+                        loginButton
                     }
-                    .buttonStyle(
-                        .customButtonStyle(
-                            foregroundColor: Color(.Login.Colors.background1),
-                            backgroundColor: .white,
-                            fontSize: .headline,
-                            height: 52,
-                            width: 293
-                        )
-                    )
+                    .padding(.horizontal, 50)
+                    orBorder
+                    googleLoginButton
+                        .padding(.horizontal, 50)
+                    registerButton
                 }
             }
         }
     }
+}
+
+private extension LoginView {
     // 背景色
     var background: some View {
         LinearGradient(
@@ -47,6 +42,108 @@ struct LoginView: View {
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
+    }
+    // ロゴ
+    var logo: some View {
+        Image(.Login.Images.logo)
+            .resizable()
+            .frame(width: 235, height: 97)
+    }
+}
+
+private extension LoginView {
+    // ユーザーIDのテキストフィールド
+    var userIDTextField: some View {
+        ZStack(alignment: .leading) {
+            if viewModel.id.isEmpty {
+                Text("ユーザーID")
+                    .foregroundStyle(.white)
+                    .padding()
+            }
+            TextField("", text: $viewModel.id)
+                .textFieldStyle(
+                    .customTextField
+                )
+                .keyboardType(.asciiCapable)
+                .textInputAutocapitalization(.never)
+            
+        }
+    }
+    // パスワードテキストフィールド
+    var passwordTextField: some View {
+        ZStack(alignment: .leading) {
+            if viewModel.password.isEmpty {
+                Text("パスワード")
+                    .foregroundStyle(.white)
+                    .padding()
+            }
+            TextField("", text: $viewModel.password)
+                .textFieldStyle(
+                    .customTextField
+                )
+        }
+    }
+    // ログインボタン
+    var loginButton: some View {
+        Button("ログイン") {
+            
+        }
+        .buttonStyle(
+            .customButtonStyle(
+                foregroundColor: Color(.Login.Colors.background1),
+                backgroundColor: .white,
+                fontSize: .headline,
+                height: 52,
+                width: 293
+            )
+        )
+    }
+}
+
+private extension LoginView {
+    // ---または----- の線
+    var orBorder: some View {
+        HStack(spacing: 20) {
+            border
+            Text("または")
+                .foregroundStyle(.white)
+            border
+        }
+    }
+    var border: some View {
+        Rectangle()
+            .frame(width: 130, height: 1)
+            .foregroundStyle(.white)
+    }
+    
+    // googleのやつ
+    var googleLoginButton: some View {
+        Button(action: {
+            
+        }) {
+            HStack {
+                Image(.Login.Images.googleIcon)
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                Text("Googleログイン")
+                    .foregroundStyle(.black)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 4)
+        }
+        .background(.white)
+        .clipShape(Capsule())
+    }
+    
+    var registerButton: some View {
+        HStack(spacing: 4) {
+            Text("アカウントが未作成ですか？")
+            Button("アカウントを作成") {
+                
+            }
+            .bold()
+        }
+        .foregroundStyle(.white)
     }
 }
 

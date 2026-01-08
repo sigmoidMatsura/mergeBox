@@ -13,7 +13,7 @@ enum OnboardingViewAction {
 
 @Observable
 class OnboardingViewModel {
-    var router: AuthRouter = .init()
+    var router: AppRouter = .init()
     var selection = 1
     var isLoading: Bool = false
     // 現在のタブがonboardingValuesと同じなら(最後のtabなら)true
